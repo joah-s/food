@@ -18,7 +18,7 @@ När användaren vill planera mat för kommande vecka:
 - **Språk**: svenska
 - **Vecka**: lunch + middag
 - **Standardportioner**: 6 portioner per recept (om inget annat anges)
-- **Preferens**: högre protein, varierat (inte low carb, inte veganskt)
+- **Preferens**: högre protein, varierat (inte low carb, inte veganskt) — **ca 80% vegetarisk, ca 20% kött/fisk**
 - **Receptkällor**: prioritera kvalitet — Köket, Tasteline, Arla, Landleys Kök, internationella vid autenticitet
 
 ## Agentarkitektur
@@ -59,11 +59,12 @@ Varje researcher:
 
 **Exempel:**
 ```
-5 valda rätter → 5 parallella recipe-researcher-agenter:
-  Agent 1: "Hitta bästa recept för kycklingfajitas, 6 portioner"
-  Agent 2: "Hitta bästa recept för laxpasta, 6 portioner"
-  Agent 3: "Hitta bästa recept för chili con carne, 6 portioner"
-  ...
+5 valda rätter (80% veg, 20% kött/fisk) → 5 parallella recipe-researcher-agenter:
+  Agent 1: "Hitta bästa recept för kikärtscurry, 6 portioner"         (vegetarisk)
+  Agent 2: "Hitta bästa recept för halloumigryta, 6 portioner"        (vegetarisk)
+  Agent 3: "Hitta bästa recept för tofuwok, 6 portioner"              (vegetarisk)
+  Agent 4: "Hitta bästa recept för pasta med zucchini & pesto, 6 port" (vegetarisk)
+  Agent 5: "Hitta bästa recept för laxpasta, 6 portioner"             (kött/fisk)
 ```
 
 Efter alla researchers returnerat:

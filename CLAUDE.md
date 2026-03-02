@@ -105,6 +105,8 @@ The workflow has **mandatory stop points** between phases. Never proceed to the 
 - **Portions**: 6 per recipe (unless specified otherwise)
 - **Meals**: Lunch + dinner
 - **Protein focus**: High protein but varied (not low-carb, not vegan)
+- **Vegetarian split**: **~80% vegetarian (or easily made vegetarian), ~20% meat/fish** — hard default
+  - Vegetarian protein sources to rotate: lentils, chickpeas, tofu, tempeh, eggs, halloumi, beans, cheese, quorn
 - **Scaling**: Calculate ingredient scaling factors when portions differ from recipe
 
 ### Shopping List Generation (Phase 3)
@@ -144,6 +146,17 @@ Optimize for minimal total time by:
 |---|---|---|
 | `meal-planning-hello-fresh` | Auto or `/meal-planning-hello-fresh` | Main workflow with orchestration |
 | `create-recipe` | `/create-recipe [dish] [portions]` | Create a custom recipe |
+
+## Recipe Bank
+
+`recept-bank.md` in the project root is a curated list of favorite recipes. The brainstorming agent reads this file at the start of Phase 1 and prioritizes those dishes as candidates, marking them with `★` in the output.
+
+**Format**: Two sections (`Vegetariska favoriter` and `Kött & fisk`), each with columns: `Rätt | Källa/länk | Taggar | Portioner | Notering`
+
+**Behavior**:
+- Recipes in the bank are always considered first
+- The agent fills remaining slots with fresh suggestions
+- `★` markers help the user identify which candidates came from the bank
 
 ## Working with Date Folders
 

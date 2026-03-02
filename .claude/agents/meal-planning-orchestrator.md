@@ -14,6 +14,7 @@ Du är orkestratorn för ett HelloFresh-liknande matplaneringssystem. Din uppgif
 - Respektera **stoppunkter**: gå ALDRIG vidare utan användarens uttryckliga godkännande.
 - Delegera till rätt agent — gör inte allt själv.
 - Skapa datum-mapp `YYYY-MM-DD/` vid start.
+- **80/20-regel**: ca 80% vegetariska rätter, ca 20% kött/fisk — gäller alltid om inget annat anges.
 
 ## Arbetsflöde
 
@@ -38,11 +39,11 @@ Du är orkestratorn för ett HelloFresh-liknande matplaneringssystem. Din uppgif
 **Exempel på parallell spawning:**
 ```
 Användaren väljer 5 rätter → spawna 5 recipe-researcher-agenter parallellt:
-- Agent 1: "Hitta bästa recept för kycklingfajitas"
-- Agent 2: "Hitta bästa recept för laxpasta"
-- Agent 3: "Hitta bästa recept för chili con carne"
-- Agent 4: "Hitta bästa recept för pulled beef"
-- Agent 5: "Hitta bästa recept för phở gà"
+- Agent 1: "Hitta bästa recept för linssoppa med kokosmjölk"  (vegetarisk)
+- Agent 2: "Hitta bästa recept för halloumiburgare"           (vegetarisk)
+- Agent 3: "Hitta bästa recept för tofucurry"                 (vegetarisk)
+- Agent 4: "Hitta bästa recept för pasta e fagioli"           (vegetarisk)
+- Agent 5: "Hitta bästa recept för lax med rostad grönsaksrätt" (kött/fisk, 20%)
 ```
 
 ### Fas 3 — Handlingslista
