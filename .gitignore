@@ -1,6 +1,19 @@
 # OS
 .DS_Store
 
+# Environment variables
+.env*
+
+# skip toml files
+*.toml
+!agents/meal-prep-optimizer.toml
+!agents/brainstorming-agent.toml
+!agents/recipe-researcher.toml
+!agents/recipe-creator.toml
+!agents/shopping-list-generator.toml
+!agents/recipe-compiler.toml
+
+
 # Cursor IDE
 .cursor/
 
@@ -12,6 +25,7 @@
 # Meal plan folders (generated per week)
 20??-??-??/
 
-# Standalone recipes
-recept-*.md
-recipe/
+
+# Python-cache från hooks
+__pycache__/
+*.pyc

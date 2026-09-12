@@ -18,7 +18,7 @@ När användaren vill planera mat för kommande vecka:
 - **Språk**: svenska
 - **Vecka**: lunch + middag
 - **Standardportioner**: 6 portioner per recept (om inget annat anges)
-- **Preferens**: högre protein, varierat (inte low carb, inte veganskt) — **ca 80% vegetarisk, ca 20% kött/fisk**
+- **Preferens**: högre protein, varierat (inte low carb, inte veganskt)
 - **Receptkällor**: prioritera kvalitet — Köket, Tasteline, Arla, Landleys Kök, internationella vid autenticitet
 
 ## Agentarkitektur
@@ -60,12 +60,11 @@ Varje researcher:
 
 **Exempel:**
 ```
-5 valda rätter (80% veg, 20% kött/fisk) → 5 parallella recipe-researcher-agenter:
-  Agent 1: "Hitta bästa recept för kikärtscurry, 6 portioner"         (vegetarisk)
-  Agent 2: "Hitta bästa recept för halloumigryta, 6 portioner"        (vegetarisk)
-  Agent 3: "Hitta bästa recept för tofuwok, 6 portioner"              (vegetarisk)
-  Agent 4: "Hitta bästa recept för pasta med zucchini & pesto, 6 port" (vegetarisk)
-  Agent 5: "Hitta bästa recept för laxpasta, 6 portioner"             (kött/fisk)
+5 valda rätter → 5 parallella recipe-researcher-agenter:
+  Agent 1: "Hitta bästa recept för kycklingfajitas, 6 portioner"
+  Agent 2: "Hitta bästa recept för laxpasta, 6 portioner"
+  Agent 3: "Hitta bästa recept för chili con carne, 6 portioner"
+  ...
 ```
 
 Efter alla researchers returnerat:
@@ -103,20 +102,11 @@ Ingen separat stoppunkt — fortsätt direkt till Fas 5.
 
 Ge agenten alla recept (baserat på `04-alla-recept.md`). Agenten skapar tidsoptimerad tillagningsplan i `05-meal-prep-plan.md`.
 
-### Valfritt sista steg
-Fråga: **"Vill du exportera veckan till Notion (Inhandling)?"**
-
-Om ja: kör skillen `export-to-notion` (i huvudkonversationen, inte via subagent). Den skapar
-en översiktssida i Notion-databasen 💸 Inhandling med undersidor för handlingslista och
-meal prep-plan, plus genvägar till recepten i Recept-databasen (recept dupliceras aldrig).
-Se [export-to-notion](../export-to-notion/SKILL.md).
-
-Klart! Ingen ytterligare stoppunkt efter detta.
+Klart! Ingen stoppunkt efter detta.
 
 ## Ytterligare skills
 
 - `/create-recipe [rätt] [portioner]` — Skapa ett eget recept från grunden
-- `/export-to-notion [YYYY-MM-DD]` — Exportera en färdig vecka till Notion (Inhandling)
 
 ## Referens
 

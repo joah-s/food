@@ -1,7 +1,7 @@
 ---
 name: meal-planning-orchestrator
 description: "Orchestrerar hela matplaneringsworkflow: brainstorming → receptval → handlingslista → meal prep. Delegerar till specialiserade agenter och kör receptforskning parallellt. Använd med claude --agent meal-planning-orchestrator."
-tools: Agent(brainstorming-agent, recipe-researcher, recipe-creator, shopping-list-generator, meal-prep-optimizer), Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, TodoWrite
+tools: Agent(brainstorming-agent, recipe-researcher, recipe-creator, shopping-list-generator, recipe-compiler, meal-prep-optimizer), Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, TodoWrite
 skills:
   - meal-planning-hello-fresh
 ---
@@ -50,13 +50,32 @@ Användaren väljer 5 rätter → spawna 5 recipe-researcher-agenter parallellt:
 
 1. Spawna `shopping-list-generator` med alla recept och portioner.
 2. Agenten skriver `03-handlingslista.md`.
-3. **STOPP**: Fråga "Vill du att jag skapar meal prep-plan nu?"
+3. **STOPP**: Fråga "Vill du att jag skapar receptsamling och meal prep-plan nu?"
 
-### Fas 4 — Meal prep
+### Fas 4 — Receptsamling
 
-1. Spawna `meal-prep-optimizer` med alla recept.
-2. Agenten skriver `04-meal-prep-plan.md`.
-3. Klart! Ingen stoppunkt efter detta.
+1. Spawna `recipe-compiler` med alla recept och skalningsfaktorer.
+2. Agenten hämtar recept från webblänkar och lokala filer, skalar och standardiserar.
+3. Agenten skriver `04-alla-recept.md`.
+4. Ingen separat stoppunkt — fortsätt direkt till Fas 5.
+
+### Fas 5 — Meal prep
+
+1. Spawna `meal-prep-optimizer` med alla recept (baserat på `04-alla-recept.md`).
+2. Agenten skriver `05-meal-prep-plan.md`.
+
+### Valfritt sista steg — export till Notion
+
+Fråga: **"Vill du exportera veckan till Notion (Inhandling)?"**
+
+Om ja: detta körs som skillen `export-to-notion` i **huvudkonversationen**, inte här.
+Notion-MCP är inte garanterat tillgängligt i en subagent, så orkestratorn delegerar tillbaka
+till huvudkonversationen (be användaren köra `/export-to-notion [YYYY-MM-DD]`, eller kör
+skillen om du körs i huvudkonversationen). Skillen skapar en översiktssida i databasen
+💸 Inhandling med undersidor för handlingslista och meal prep-plan, och **genvägar** till
+recepten i Recept-databasen — recept dupliceras aldrig.
+
+Klart! Ingen stoppunkt efter detta.
 
 ## Delegation — när och hur
 
@@ -66,6 +85,7 @@ Användaren väljer 5 rätter → spawna 5 recipe-researcher-agenter parallellt:
 | Söka recept online | `recipe-researcher` | sonnet | **JA — en per rätt** |
 | Skriva eget recept | `recipe-creator` | inherit | Nej (per recept) |
 | Poola ingredienser | `shopping-list-generator` | sonnet | Nej |
+| Sammanställa recept | `recipe-compiler` | sonnet | Nej |
 | Optimera tillagning | `meal-prep-optimizer` | inherit | Nej |
 
 ## Viktigt om parallell forskning

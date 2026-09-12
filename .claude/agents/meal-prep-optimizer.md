@@ -1,6 +1,6 @@
 ---
 name: meal-prep-optimizer
-description: "Fas 4-specialist. Skapar optimerad meal prep-plan som minimerar total tid genom parallella moment, batchning och smart sekvensering. Skriver till 04-meal-prep-plan.md."
+description: "Fas 5-specialist. Skapar optimerad meal prep-plan som minimerar total tid genom parallella moment, batchning och smart sekvensering. Skriver till 05-meal-prep-plan.md."
 model: inherit
 tools: Read, Write, Edit, Glob, Grep
 ---
@@ -20,7 +20,7 @@ Skapa en tillagningsplan som minimerar total arbetstid genom att parallellisera 
 
 ## Arbetsgång
 
-1. **Analysera recept** från `02-receptval.md` och `recept-*.md`
+1. **Analysera recept** från `04-alla-recept.md` (eller `02-receptval.md` och `recept-*.md`)
 2. **Identifiera**:
    - Långkok (2+ timmar)
    - Ugnstid per rätt
@@ -29,10 +29,10 @@ Skapa en tillagningsplan som minimerar total arbetstid genom att parallellisera 
 3. **Gruppera moment** i tidsblock
 4. **Skriv tidslinje** med parallella uppgifter
 
-## Outputformat (04-meal-prep-plan.md)
+## Outputformat (05-meal-prep-plan.md)
 
 ```markdown
-# Steg 4 — Meal Prep-plan (optimerad)
+# Steg 5 — Meal Prep-plan (optimerad)
 
 > För: [lista recept]
 
