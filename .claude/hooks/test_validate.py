@@ -4,13 +4,16 @@
 Kor: python3 .claude/hooks/test_validate.py
 
 Testerna tacker det som ar heuristiskt och darmed skort: normaliseringen,
-karnordsutvinningen och matchningen av ingredienser mot instruktionssteg.
+karnordsutvinningen, matchningen av ingredienser mot instruktionssteg och
+korskontrollen av handlingslistan (list-sok och stapelvaror).
 """
 
 from __future__ import annotations
 
+import io
 import sys
 import tempfile
+from contextlib import redirect_stdout
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -20,6 +23,12 @@ from validate_recipe import (  # noqa: E402
     find_mention,
     normalize,
     validate,
+)
+from validate_week import (  # noqa: E402
+    collect_list_items,
+    collect_search_terms,
+    main as validate_week_main,
+    read_weekly_staples,
 )
 
 failures: list[str] = []
@@ -157,6 +166,188 @@ silenced = GOOD.replace(
     "- 500 g blandfärs", "- 500 g blandfärs\n- 2 msk tomatpuré <!-- no-check -->"
 )
 check("no-check-markören tystar Regel 2", errors_for(silenced), [])
+
+
+# --------------------------------------------------------------------------
+# Handlingslistan: kodblock, stapelvaror och list-sok
+# --------------------------------------------------------------------------
+
+WEEK_RECIPES = """# Steg 4 — Alla recept
+
+## Testwok
+
+### Ingredienser (6 portioner)
+- 2 st rödlökar
+- 2 st röda paprikor
+- 2 st gula lökar
+- 5 dl jasminris
+- 2 msk risvinäger
+- 2 msk olivolja
+- 1 dl vatten
+- salt efter smak
+"""
+
+LIST_SEARCH = """## List-sök (Willys)
+Kopiera blocket och klistra in i butikens list-sök.
+```text
+{terms}
+```
+"""
+
+WEEK_SHOPPING = """# Steg 3 — Handlingslista (poolad)
+> header
+
+{list_search}
+---
+
+## Grönsaker
+- 2 st rödlökar
+- 2 st röda paprikor
+- 2 st gula lökar
+
+## Skafferi
+- 5 dl jasminris
+- 2 msk risvinäger
+- 2 msk olivolja
+
+## Stapelvaror (återkommande)
+Från `stapelvaror.md`, hör inte till något recept.
+### Frukt
+- Banan
+### Hushåll & hygien
+- Toalettpapper
+### Kolla hemma (vid behov)
+- [ ] Schampoo
+
+---
+
+## Skafferi-antaganden (verifiera om du har hemma)
+- salt
+- vatten
+"""
+
+FULL_TERMS = "rödlök\nröd paprika\ngul lök\njasminris\nrisvinäger\nbanan\ntoalettpapper"
+
+STAPLES = """# Stapelvaror
+
+## Format
+
+```
+| Vara | Kategori | Frekvens | Mängd | Notering |
+| Kodblock | Frukt | varje vecka | – | ska inte räknas |
+```
+
+## Varor
+
+| Vara | Kategori | Frekvens | Mängd | Notering |
+|---|---|---|---|---|
+| Banan | Frukt | varje vecka | – | |
+| Toalettpapper | Hushåll & hygien | varje vecka | – | |
+| Schampoo | Hushåll & hygien | vid behov | – | |
+"""
+
+
+def shopping_with(terms: str | None) -> str:
+    block = LIST_SEARCH.format(terms=terms) if terms is not None else ""
+    return WEEK_SHOPPING.format(list_search=block)
+
+
+def run_week(shopping: str, staples: str | None = None) -> tuple[int, str]:
+    """Kor validate_week pa en temporar veckomapp. Returnerar (exitkod, utdata)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        week = Path(tmp) / "2026-01-05"
+        week.mkdir()
+        (week / "03-handlingslista.md").write_text(shopping, encoding="utf-8")
+        (week / "04-alla-recept.md").write_text(WEEK_RECIPES, encoding="utf-8")
+        if staples is not None:
+            (Path(tmp) / "stapelvaror.md").write_text(staples, encoding="utf-8")
+        out = io.StringIO()
+        with redirect_stdout(out):
+            code = validate_week_main([str(week)])
+        return code, out.getvalue()
+
+
+def list_search_tips(output: str) -> list[str]:
+    return [line.strip() for line in output.splitlines() if "list-sök" in line]
+
+
+def items_in(text: str) -> list[str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "03-handlingslista.md"
+        path.write_text(text, encoding="utf-8")
+        return [item.name for item in collect_list_items(path)]
+
+
+def terms_in(text: str) -> list[str] | None:
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "03-handlingslista.md"
+        path.write_text(text, encoding="utf-8")
+        return collect_search_terms(path)
+
+
+# Kodblock ska inte ge punkter, aven om raderna ser ut som punkter.
+check(
+    "punkter i kodblock ignoreras",
+    items_in("## Grönsaker\n- 1 st gurka\n```text\n- 2 st tomater\npotatis\n```\n"),
+    ["gurka"],
+)
+
+# Stapelvaror hoppas over fram till nasta '## '-rubrik, ocksa under '###'.
+names = items_in(shopping_with(FULL_TERMS))
+staple_names = [n for n in names if n in ("Banan", "Toalettpapper", "[ ] Schampoo")]
+check("Stapelvaror-sektionen ignoreras", staple_names, [])
+check("punkter efter Stapelvaror räknas igen", "salt" in names and "rödlökar" in names, True)
+
+check("list-sök-blocket läses", terms_in(shopping_with("potatis\n\ngul lök")),
+      ["potatis", "gul lök"])
+check("bara första kodblocket under List-sök läses",
+      terms_in(shopping_with("potatis") + "\n## List-sök igen\n```\nbanan\n```\n"), ["potatis"])
+check("saknat list-sök-block ger None", terms_in(shopping_with(None)), None)
+
+code, output = run_week(shopping_with(None))
+check("saknat list-sök-block ger exit 0", code, 0)
+check("saknat list-sök-block ger TIPS",
+      any("saknar list-sök-block" in t for t in list_search_tips(output)), True)
+_, output = run_week(shopping_with(None), STAPLES)
+check("saknat list-sök-block ger inga stapelvaru-TIPS",
+      any("stapelvaran" in t for t in list_search_tips(output)), False)
+
+code, output = run_week(shopping_with(FULL_TERMS), STAPLES)
+check("full täckning ger exit 0", code, 0)
+check("full täckning ger inga list-sök-TIPS", list_search_tips(output), [])
+check("stapelvaror ger inga 'matchar ingen ingrediens'-TIPS", "matchar ingen" in output, False)
+
+# Plural i receptet mot singular i list-sok, bade prefixnyckel ('rodlo')
+# och kort karnord med bojningsandelse ('lok' mot 'lokar').
+_, output = run_week(shopping_with("rödlök\nröd paprika\ngul lök\njasminris\nrisvinäger"))
+check("pluralformer matchar list-sök", list_search_tips(output), [])
+
+code, output = run_week(shopping_with(FULL_TERMS.replace("röd paprika\n", "")))
+tips = list_search_tips(output)
+check("saknad receptingrediens ger exit 0", code, 0)
+check("saknad receptingrediens ger ett TIPS", len(tips), 1)
+check("TIPS nämner ingrediensen", "'röda paprikor'" in (tips[0] if tips else ""), True)
+
+# Kort karnord far bara bojningsandelse, inte ett helt efterled: 'ris' != 'risvinager'.
+_, output = run_week(shopping_with(FULL_TERMS.replace("jasminris\nrisvinäger", "ris")))
+tips = list_search_tips(output)
+check("'ris' täcker inte 'risvinäger' eller 'jasminris'", len(tips), 2)
+
+with tempfile.TemporaryDirectory() as tmp:
+    staples_path = Path(tmp) / "stapelvaror.md"
+    staples_path.write_text(STAPLES, encoding="utf-8")
+    check("varje vecka-varor läses, kodblock och vid behov hoppas över",
+          read_weekly_staples(staples_path), ["Banan", "Toalettpapper"])
+
+code, output = run_week(shopping_with(FULL_TERMS.replace("\ntoalettpapper", "")), STAPLES)
+tips = list_search_tips(output)
+check("saknad varje vecka-stapelvara ger exit 0", code, 0)
+check("saknad varje vecka-stapelvara ger ett TIPS", len(tips), 1)
+check("TIPS nämner stapelvaran", "stapelvaran 'Toalettpapper'" in (tips[0] if tips else ""), True)
+
+# Utan stapelvaror.md i foraldrakatalogen kontrolleras inga stapelvaror.
+_, output = run_week(shopping_with(FULL_TERMS.replace("\ntoalettpapper", "")))
+check("utan stapelvaror.md ges inga stapelvaru-TIPS", list_search_tips(output), [])
 
 
 # --------------------------------------------------------------------------

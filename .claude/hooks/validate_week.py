@@ -9,6 +9,13 @@ Kontrollerar att varje ingrediens i 04-alla-recept.md finns i
 03-handlingslista.md, och att den poolade mangden racker. Skafferivaror
 (salt, peppar, olja, vatten) rapporteras som TIPS, aldrig som FEL.
 
+Punkter i kodblock och under '## Stapelvaror' raknas inte som receptvaror.
+
+List-sok-blocket (kodblocket under '## List-sok') kontrolleras bara pa
+TIPS-niva: varje receptingrediens utom skafferivaror ska ha ett sokord, och
+nar anropet sker med en veckomapp ska varje 'varje vecka'-vara i
+../stapelvaror.md ocksa ha det. Ett saknat block ger ett TIPS, aldrig FEL.
+
 Exitkoder: 0 = inga FEL, 1 = minst ett FEL, 2 = anropsfel.
 """
 
@@ -41,6 +48,11 @@ FRACTIONS = {"½": 0.5, "¼": 0.25, "¾": 0.75}
 
 PANTRY = {"salt", "peppar", "svartpeppar", "vitpeppar", "olja", "olivolja",
           "rapsolja", "vatten", "socker", "strösocker", "smör"}
+
+# Bojningsandelser som far folja ett kort karnord ('lok' -> 'lokar').
+INFLECTIONS = {"", "a", "e", "n", "r", "ar", "er", "or", "en", "et", "na"}
+
+HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 
 
 @dataclass
@@ -121,10 +133,31 @@ def collect_recipe_items(path: Path) -> list[Item]:
     return items
 
 
+def is_fence(line: str) -> bool:
+    return line.strip().startswith("```")
+
+
 def collect_list_items(path: Path) -> list[Item]:
-    """Alla punkter i 03-handlingslista.md."""
+    """Punkterna i 03-handlingslista.md som hor till recepten.
+
+    Rader i kodblock (list-sok) och allt under '## Stapelvaror' fram till nasta
+    '## '-rubrik hoppas over: stapelvaror hor inte till nagot recept.
+    """
     items: list[Item] = []
+    fence = False
+    staples = False
     for line_no, line in enumerate(path.read_text(encoding="utf-8").split("\n"), start=1):
+        if is_fence(line):
+            fence = not fence
+            continue
+        if fence:
+            continue
+        heading = HEADING_RE.match(line)
+        if heading and len(heading.group(1)) <= 2:
+            staples = fold(heading.group(2).strip()).startswith("stapelvaror")
+            continue
+        if staples:
+            continue
         if re.match(r"^\s*[-*]\s+\S", line):
             item = parse_item(line, line_no)
             if item:
@@ -193,6 +226,121 @@ def cross_check(recipe_items: list[Item], list_items: list[Item]) -> tuple[list[
     return errors, tips
 
 
+def collect_search_terms(path: Path) -> list[str] | None:
+    """Sokorden i kodblocket under '## List-sok'. None om blocket saknas."""
+    terms: list[str] | None = None
+    fence = False
+    under = False
+    for line in path.read_text(encoding="utf-8").split("\n"):
+        if is_fence(line):
+            if fence and terms is not None:
+                return terms
+            fence = not fence
+            if fence and under:
+                terms = []
+            continue
+        if fence:
+            if terms is not None and line.strip():
+                terms.append(line.strip())
+            continue
+        heading = HEADING_RE.match(line)
+        if heading:
+            level, title = len(heading.group(1)), fold(heading.group(2).strip())
+            if level <= 3 and title.startswith("list-sok"):
+                under = True
+            elif level <= 2:
+                under = False
+    return terms
+
+
+def read_weekly_staples(path: Path) -> list[str]:
+    """Varor med frekvens 'varje vecka' ur tabellen i stapelvaror.md."""
+    names: list[str] = []
+    columns: list[str] | None = None
+    fence = False
+    for line in path.read_text(encoding="utf-8").split("\n"):
+        stripped = line.strip()
+        if is_fence(line):
+            fence = not fence
+            continue
+        if fence or not stripped.startswith("|"):
+            columns = None
+            continue
+        cells = [c.strip() for c in stripped.strip("|").split("|")]
+        if columns is None:
+            columns = [fold(c) for c in cells]
+            continue
+        if all(re.fullmatch(r":?-+:?", c) for c in cells if c):
+            continue
+        row = dict(zip(columns, cells))
+        frequency = " ".join(fold(row.get("frekvens", "")).split())
+        if frequency == "varje vecka" and row.get("vara"):
+            names.append(row["vara"])
+    return names
+
+
+def is_pantry(name: str) -> bool:
+    """Exakt karnord i PANTRY, sa att 'sockerartor' inte raknas som 'socker'."""
+    folded = {fold(p) for p in PANTRY}
+    return any(fold(head) in folded for head in extract_headwords(name))
+
+
+def key_matches(key: str, search_keys: set[str]) -> bool:
+    """Samma nyckel, eller kort karnord plus bojningsandelse ('lok' ~ 'lokar')."""
+    if key in search_keys:
+        return True
+    for other in search_keys:
+        short, long_ = sorted((key, other), key=len)
+        if 3 <= len(short) < 5 and long_.startswith(short) and long_[len(short):] in INFLECTIONS:
+            return True
+    return False
+
+
+def check_list_search(recipe_items: list[Item], terms: list[str] | None,
+                      staples: list[str]) -> list[str]:
+    """TIPS for list-sok-blocket. Blockerar aldrig, darfor inga FEL."""
+    if terms is None:
+        return [
+            "handlingslistan saknar list-sök-block (`## List-sök` med ett kodblock, en "
+            "vara per rad). Lägg till det så att listan kan klistras in i butikens list-sök."
+        ]
+    tips: list[str] = []
+    search_keys = {key for term in terms for key in keys_for(term)}
+
+    groups: dict[str, list[Item]] = defaultdict(list)
+    for item in recipe_items:
+        keys = keys_for(item.name)
+        if keys:
+            groups[keys[0]].append(item)
+
+    for _, group in sorted(groups.items()):
+        if is_pantry(group[0].name):
+            continue
+        item_keys = {k for i in group for k in keys_for(i.name)}
+        if not any(key_matches(k, search_keys) for k in item_keys):
+            tips.append(
+                f"list-sök: {group[0].name!r} (rad {group[0].line_no} i receptsamlingen) "
+                "saknas i list-sök-blocket. Lägg till en rad för den."
+            )
+
+    for name in staples:
+        keys = keys_for(name)
+        if keys and not any(key_matches(k, search_keys) for k in keys):
+            tips.append(
+                f"list-sök: stapelvaran {name!r} (varje vecka i stapelvaror.md) saknas i "
+                "list-sök-blocket. Lägg till en rad för den."
+            )
+    return tips
+
+
+def staples_for(args: list[str]) -> list[str]:
+    """Stapelvaror fran projektroten, bara nar anropet galler en veckomapp."""
+    if len(args) != 1 or not Path(args[0]).is_dir():
+        return []
+    path = Path(args[0]).resolve().parent / "stapelvaror.md"
+    return read_weekly_staples(path) if path.is_file() else []
+
+
 def resolve_paths(args: list[str]) -> tuple[Path, Path] | None:
     if len(args) == 1 and Path(args[0]).is_dir():
         folder = Path(args[0])
@@ -224,6 +372,7 @@ def main(argv: list[str]) -> int:
         return 2
 
     errors, tips = cross_check(recipe_items, collect_list_items(shopping))
+    tips += check_list_search(recipe_items, collect_search_terms(shopping), staples_for(argv))
     print(f"{shopping} ↔ {recipes}:")
     for e in errors:
         print(f"  FEL      {e}")

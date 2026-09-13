@@ -12,13 +12,15 @@ This is a meal planning repository that implements a HelloFresh-like workflow fo
 
 ```
 recipe/                              # Committed recipe library (not week-specific)
-└── recept-<slug>-<portioner>p.md
+├── vegetarian/                      # Vegetarian recipes
+│   └── recept-<slug>-<portioner>p.md
+└── recept-<slug>-<portioner>p.md    # Meat & fish recipes
 
 YYYY-MM-DD/                          # Date-based meal planning folders (gitignored)
 ├── 01-brainstorming.md              # Meal preferences + candidate meals
 ├── 02-receptval.md                  # Selected recipes with links/sources
 ├── recept-*.md                      # Week-specific custom recipes
-├── 03-handlingslista.md             # Pooled shopping list (generated on request)
+├── 03-handlingslista.md             # Pooled shopping list + list-sök block + stapelvaror (generated on request)
 ├── 04-alla-recept.md                # All recipes in standardized format (generated on request)
 └── 05-meal-prep-plan.md             # Optimized prep timeline (generated on request)
 
@@ -106,7 +108,9 @@ The workflow has **mandatory stop points** between phases. Never proceed to the 
    - Stop and wait: User selects dishes or provides own recipes
 
 2. **Phase 2 (Recipe Selection)**: Parallel recipe research + custom recipe creation
-   - Stop and wait: Ask "Vill du att jag skapar handlingslista nu?"
+   - Stop and wait: Ask "Vill du att jag skapar handlingslista nu?" — and, if `stapelvaror.md`
+     has `vid behov` items, which of those are needed this week (and whether any `varje vecka`
+     item should be skipped)
 
 3. **Phase 3 (Shopping List)**: Generate pooled, consolidated shopping list
    - Stop and wait: Ask "Vill du att jag skapar receptsamling och meal prep-plan nu?"
@@ -136,11 +140,11 @@ phase gate, and can also be run standalone on any existing week folder.
   plan (`05`).
 - **Must run in the main conversation** — Notion MCP isn't guaranteed inside subagents.
 - **Inhandling data source** (parent for week pages):
-  `collection://2ad3a69e-7647-80a2-89f3-000b0dfb831e` (database id
-  `2ad3a69e-7647-806c-bba0-d503a8f0f2a0`, under the "Matlagning" page).
+  `collection://26099407-3d52-4deb-9c73-dd54c05d546d` (database "💸 Inhandling",
+  `0e540327f8bd4ff68e69d3413d94aa8a`, under the "Matlagning" page).
 - **Recept data source** (parent for new recipes):
-  `collection://ebeb4bdf-f600-4429-bf2b-68e0a78a623e` (database "Recipes",
-  `b90e9acce8ee46009f77bceb1afe7f02`).
+  `collection://af369de7-03ce-409d-8391-b4183d42e20a` (database "🍲 Recept",
+  `a6b869d70c3543e48126902db8525238`, under the "Matlagning" page).
 - See `.claude/skills/export-to-notion/SKILL.md` for the full procedure.
 
 ### Language & Units
@@ -187,9 +191,16 @@ phase gate, and can also be run standalone on any existing week folder.
 - **Pool ingredients** across all selected recipes
 - **Normalize units** for clarity
 - **Use butiksvänliga names** (Swedish grocery store names)
-- **Categorize**: Grönsaker, Frukt, Mejeri & Ägg, Kött & Fisk, Skafferi, Kryddor & Såser, Fryst, Bröd, Övrigt
+- **Categorize**: Grönsaker, Frukt, Mejeri & Ägg, Kött & Fisk, Skafferi, Kryddor & Såser, Fryst, Bröd, Övrigt (+ Hushåll & hygien for stapelvaror)
+- **Bullet lists, not tables**: `- <mängd> <ingrediens> (<recept>)` — `validate_week.py` only reads bullets
 - **Pantry assumptions**: List separately (salt, pepper, oils) - don't assume silently
 - **Mark uncertainties**: Use "(verifiera)" instead of guessing
+- **List-sök block**: `## List-sök (Willys)` directly under the header — a `text` code block with
+  one product per line, lowercase, no amounts, in store-category order. The user pastes it into
+  Willys' list search when ordering. Contains every recipe ingredient plus `varje vecka`
+  stapelvaror; excludes salt, pepper, water and unconfirmed `vid behov` items.
+- **Stapelvaror**: recurring non-recipe items from `stapelvaror.md` (see below) go in their own
+  `## Stapelvaror (återkommande)` section, never mixed into the recipe categories
 
 ### Custom Recipes
 
@@ -233,6 +244,23 @@ Optimize for minimal total time by:
 - Recipes in the bank are always considered first
 - The agent fills remaining slots with fresh suggestions
 - `★` markers help the user identify which candidates came from the bank
+
+## Stapelvaror (recurring items)
+
+`stapelvaror.md` in the project root lists household items bought regularly that don't belong
+to any recipe (toilet paper, bread, oat milk, coffee, bananas…). `shopping-list-generator` reads
+it in Phase 3.
+
+**Format**: one table with columns `Vara | Kategori | Frekvens | Mängd | Notering`, where
+`Frekvens` is `varje vecka` or `vid behov`.
+
+**Behavior**:
+- `varje vecka` items are always added — under `## Stapelvaror (återkommande)` and in the list-sök block
+- `vid behov` items are listed as `Kolla hemma` checkboxes, and only enter list-sök if the user
+  confirms them at the Phase 2 stop
+- An item that also appears in a recipe is pooled into the recipe line (`+ stapelvara`), not duplicated
+- `validate_week.py` ignores the Stapelvaror section when cross-checking recipes, and gives TIPS
+  (never FEL) when the list-sök block is missing or lacks an item
 
 ## Working with Date Folders
 

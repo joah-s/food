@@ -20,18 +20,66 @@
 
 ## Handlingslista (utdrag)
 
-### Grönsaker
-- Gul lök — 4 st
-- Vitlök — 2 st
-- Paprika — 3 st
+Stapelvarorna i exemplet är `varje vecka`: banan, havregryn, kaffe, toalettpapper och
+tandkräm. Schampoo är `vid behov` och har inte bekräftats denna vecka.
 
-### Kött & Fisk
-- Laxfilé — 900 g
+````markdown
+## List-sök (Willys)
+Kopiera blocket och klistra in i butikens list-sök. En vara per rad, utan mängder.
+```text
+gul lök
+vitlök
+röd paprika
+banan
+halloumi
+laxfilé
+kikärtor
+havregryn
+kaffe
+toalettpapper
+tandkräm
+```
 
-### Vegetariskt protein
-- Kikärtor (burk eller torkade) — 3 burkar (à 400 g)
-- Halloumi — 600 g
-- Fast tofu — 800 g
+---
+
+## Grönsaker
+- 4 st gula lökar (Chili sin carne 2 + Halloumigryta 2)
+- 6 klyftor vitlök (Chili sin carne 4 + Halloumigryta 2)
+- 3 st röda paprikor (Halloumigryta)
+
+## Frukt
+- 3 st bananer (Bananpannkakor 2 + stapelvara)
+
+## Mejeri & Ägg
+- 600 g halloumi (Halloumigryta)
+
+## Kött & Fisk
+- 900 g laxfilé (Laxpasta)
+
+## Skafferi
+- 3 burkar kikärtor, à 400 g (Chili sin carne)
+
+## Stapelvaror (återkommande)
+
+### Skafferi
+- Havregryn
+- Kaffe
+
+### Hushåll & hygien
+- Toalettpapper
+- Tandkräm
+
+### Kolla hemma (vid behov)
+- [ ] Schampoo
+````
+
+Att lägga märke till:
+- **Banan** finns både i ett recept och i `stapelvaror.md`. Den poolas in på receptraden med
+  "+ stapelvara" och står inte under Stapelvaror.
+- **List-sök** har varje produkt en gång, i gemener och butiksordning. Stapelvarorna är
+  insorterade i sin kategori (havregryn och kaffe under Skafferi).
+- **Schampoo** saknas i list-sök, eftersom den är `vid behov` och inte bekräftad.
+- **Punktlistor** med mängden först, aldrig tabeller.
 
 ## Alla recept (utdrag)
 

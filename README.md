@@ -51,6 +51,8 @@ Phases 1–3 each have a **mandatory stop point** — the system never proceeds 
 - **Quality-first recipe sourcing** — Compares multiple sources (Köket, Tasteline, Arla, international) to find the best recipe, not just the first one
 - **Custom recipe creation** — AI writes professional-quality recipes when no good source exists
 - **Smart shopping lists** — Pools ingredients across all recipes, normalizes units, categorizes by store section
+- **Ready for online ordering** — Every shopping list includes a copy-paste block (one product per line, no amounts) for Willys' list search
+- **Recurring items** — Household staples from `stapelvaror.md` (toilet paper, coffee, bread…) are added to the shopping list automatically
 - **Standardized recipe collection** — Compiles every recipe into one consistent format, scaled to your portions
 - **Optimized meal prep** — Parallelizes cooking tasks (oven + stovetop + cold prep) to minimize total time
 - **Notion export** — Publishes a finished week to the Notion *Inhandling* database as an overview page with subpages for the shopping list, each recipe, and the meal-prep plan
@@ -124,6 +126,8 @@ step after Phase 5, or standalone on any existing week folder.
 │   │   └── SKILL.md
 │   └── export-to-notion/            # /export-to-notion command
 │       └── SKILL.md
+recept-bank.md                       # Favorite recipes, prioritized in Phase 1
+stapelvaror.md                       # Recurring non-recipe items, added in Phase 3
 YYYY-MM-DD/                          # Weekly meal plans (date folders)
 ├── 01-brainstorming.md
 ├── 02-receptval.md

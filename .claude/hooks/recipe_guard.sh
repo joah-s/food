@@ -16,6 +16,7 @@ file_path="$(printf '%s' "$payload" | jq -r '.tool_input.file_path // .tool_inpu
 # Bara receptfiler. Ovriga filer passerar rort.
 base="$(basename "$file_path")"
 case "$base" in
+  recept-bank.md) exit 0 ;;  # favoritlistan, inte ett recept
   recept-*.md|04-alla-recept.md) ;;
   *.md)
     case "$file_path" in

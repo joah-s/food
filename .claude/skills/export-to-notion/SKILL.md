@@ -29,12 +29,17 @@ medan recepten är genvägar.
 
 ## Fasta värden
 
-- **Inhandling databas-id:** `2ad3a69e-7647-806c-bba0-d503a8f0f2a0`
+- **Inhandling databas ("💸 Inhandling"):** `https://app.notion.com/p/0e540327f8bd4ff68e69d3413d94aa8a`
 - **Inhandling data source (förälder för veckosidor):**
-  `collection://2ad3a69e-7647-80a2-89f3-000b0dfb831e`
-- **Recept databas ("Recipes"):** `https://app.notion.com/p/b90e9acce8ee46009f77bceb1afe7f02`
+  `collection://26099407-3d52-4deb-9c73-dd54c05d546d`
+  Egenskaper: `Name` (titel), `Datum` (date), `Portioner` (number).
+- **Recept databas ("🍲 Recept"):** `https://app.notion.com/p/a6b869d70c3543e48126902db8525238`
 - **Recept data source (förälder för nya recept):**
-  `collection://ebeb4bdf-f600-4429-bf2b-68e0a78a623e`
+  `collection://af369de7-03ce-409d-8391-b4183d42e20a`
+  Egenskaper: `Name` (titel), `Kategori` (`Vegetarisk` / `Kött & fisk`), `Taggar`
+  (multi-select), `Portioner` (number), `Källa` (URL).
+- Båda databaserna ligger under sidan **Matlagning**
+  (`https://app.notion.com/p/3d9ad5965c5981da92d2c39c332328b1`).
 - **Sidnamn:** alltid `Vecka YYYY-MM-DD` (veckans datum).
 
 ## Steg
@@ -61,7 +66,7 @@ medan recepten är genvägar.
    För **varje** rätt, innan något skapas:
 
    - Kör `notion-search` med rättens namn och
-     `data_source_url: "collection://ebeb4bdf-f600-4429-bf2b-68e0a78a623e"`.
+     `data_source_url: "collection://af369de7-03ce-409d-8391-b4183d42e20a"`.
    - Sök även på kortformer och nyckelord — titlar skiljer sig ofta mellan veckofil och
      receptsida (`Tacosmakad kycklingwrap med crème fraîche` i veckan ≙ `Tacowrap` i
      databasen). Ett napp kräver inte identisk titel, bara att det är samma rätt.
@@ -81,9 +86,10 @@ medan recepten är genvägar.
      data source-URL på nytt (skydd om id:t ändras).
 
 6. **Skapa saknade recept i Recept-databasen** (inte som veckosubpages):
-   - `parent`: `{ "type": "data_source_id", "data_source_id": "ebeb4bdf-f600-4429-bf2b-68e0a78a623e" }`
-   - `properties`: `{ "title": "<rättens namn>" }` — verifiera det faktiska titelfältets
-     namn med `notion-fetch` på data source först.
+   - `parent`: `{ "type": "data_source_id", "data_source_id": "af369de7-03ce-409d-8391-b4183d42e20a" }`
+   - `properties`: `{ "Name": "<rättens namn>", "Kategori": "Vegetarisk" | "Kött & fisk",
+     "Portioner": <X>, "Källa": "<URL>" }` — verifiera fältnamnen med `notion-fetch` på
+     data source om ett anrop misslyckas.
    - `content`: receptblocket från `04-alla-recept.md`.
    - Spara URL:en — den används för genvägen i steg 8.
 
@@ -101,8 +107,8 @@ medan recepten är genvägar.
      rätt istället för att skriva över originalet.
 
 8. **Skapa översiktssidan** med `notion-create-pages`:
-   - `parent`: `{ "type": "data_source_id", "data_source_id": "2ad3a69e-7647-80a2-89f3-000b0dfb831e" }`
-   - `properties`: `{ "Name": "Vecka YYYY-MM-DD" }`
+   - `parent`: `{ "type": "data_source_id", "data_source_id": "26099407-3d52-4deb-9c73-dd54c05d546d" }`
+   - `properties`: `{ "Name": "Vecka YYYY-MM-DD", "date:Datum:start": "YYYY-MM-DD", "Portioner": <totalt> }`
    - `content`: sammanfattning — veckans datum, antal rätter, totalt antal portioner, en
      rättlista med portioner + uppskattad tid, och veckans nyckeltal. Därefter:
      - En rubrik `## Recept` med **en `<mention-page>`-genväg per rätt**, med portioner och
@@ -116,6 +122,11 @@ medan recepten är genvägar.
 9. **Skapa subpages** med `notion-create-pages`, `parent` =
    `{ "type": "page_id", "page_id": "<översiktssidans id>" }`:
    - `Handlingslista` ← innehåll från `03-handlingslista.md`
+     - Behåll `## List-sök (Willys)` överst som ett kodblock med språket `plain text`, så att
+       Notions kopieringsknapp ger listan med en vara per rad utan formatering.
+     - Receptvarorna blir kryssrutor (`- [ ]`), grupperade per kategori.
+     - `## Stapelvaror (återkommande)` förs över med sina underrubriker. Varorna under
+       `Kolla hemma (vid behov)` behålls som kryssrutor.
    - `Meal prep-plan` ← innehåll från `05-meal-prep-plan.md`
    - **Inga receptsubpages.** Recepten är genvägar under `## Recept`.
 

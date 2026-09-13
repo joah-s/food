@@ -76,6 +76,11 @@ Efter alla researchers returnerat:
 ### STOPP (obligatorisk)
 Fråga: **"Vill du att jag skapar handlingslista nu?"**
 
+Direkt efter, som en kort följdfråga: kolla om `stapelvaror.md` finns i projektroten. Har
+den `vid behov`-varor, lista dem och fråga vilka som behövs denna vecka. Fråga också om
+någon `varje vecka`-vara ska hoppas över denna vecka. Skicka svaren vidare till
+`shopping-list-generator` i Fas 3. Saknas `stapelvaror.md`, hoppa över frågan helt.
+
 ## Fas 3 — Handlingslista
 
 **Delegera till `shopping-list-generator`.**
@@ -83,8 +88,11 @@ Fråga: **"Vill du att jag skapar handlingslista nu?"**
 Ge agenten:
 - Alla recept med portioner och skalningsfaktorer
 - Referens till `02-receptval.md` och `recept-*.md`-filer
+- Svaren på uppföljningsfrågan om stapelvaror (bekräftade `vid behov`-varor, och
+  `varje vecka`-varor som ska hoppas över denna vecka)
 
-Agenten skriver `03-handlingslista.md`.
+Agenten skriver `03-handlingslista.md`, inklusive ett list-sök-block för Willys och en
+sektion med återkommande stapelvaror. Se [reference.md](reference.md) för detaljer.
 
 ### STOPP (obligatorisk)
 Fråga: **"Vill du att jag skapar receptsamling och meal prep-plan nu?"**

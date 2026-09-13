@@ -65,3 +65,26 @@ Gissa inte tyst. Lägg i "skafferi-antaganden" och markera som valbart:
 - Fryst
 - Bröd
 - Övrigt
+
+**Hushåll & hygien** — extra kategori som bara används för stapelvaror (från
+`stapelvaror.md`), aldrig för receptingredienser. Används vid gruppering av stapelvaror
+under "Stapelvaror (återkommande)" och i list-sök-blockets ordning.
+
+## List-sök (Willys)
+
+`03-handlingslista.md` inleds med ett kodblock (språk `text`) med en vara per rad, utan
+mängder, parenteser eller receptnamn — tänkt att klistras in direkt i Willys list-sök.
+Skriv korta sökord som man faktiskt söker med, inte receptets fraser (t.ex. "rödlök", inte
+"2 st rödlökar").
+
+Ordning: Grönsaker, Frukt, Mejeri & Ägg, Kött & Fisk, Skafferi, Kryddor & Såser, Fryst,
+Bröd, Hushåll & hygien, Övrigt. Varje produkt tas med en gång, oavsett hur många recept den
+förekommer i. Skafferi-antaganden (salt, peppar), vatten och obekräftade `vid behov`-varor
+tas inte med. Fullständiga regler finns i `shopping-list-generator`.
+
+## Stapelvaror
+
+`stapelvaror.md` i projektroten listar återkommande hushållsvaror (frekvens `varje vecka`
+eller `vid behov`) som inte hör till något recept. Fas 3 läser filen automatiskt och
+sköter poolning, gruppering och eventuellt överlapp med receptingredienser ("+ stapelvara")
+— se `shopping-list-generator` för detaljerna. Saknas filen hoppas steget över tyst.

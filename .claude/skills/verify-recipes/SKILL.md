@@ -30,6 +30,17 @@ och rapportera resultatet till användaren.
    python3 .claude/hooks/validate_week.py <YYYY-MM-DD>/
    ```
 
+   Korskontrollen kontrollerar:
+   - att varje ingrediens i `04` finns i `03` med tillräcklig mängd. Saknade
+     skafferivaror (salt, peppar, olja, vatten) ger `TIPS`, övriga saknade ger `FEL`.
+   - att punkterna i `03` matchar någon ingrediens (`TIPS`). Rader i kodblock och allt
+     under `## Stapelvaror` räknas inte, eftersom stapelvaror inte hör till något recept.
+   - list-sök-blocket (kodblocket under `## List-sök`), bara som `TIPS`: varje
+     receptingrediens utom skafferivaror ska ha ett sökord, och varje `varje vecka`-vara
+     i `stapelvaror.md` ska också ha det. Stapelvarorna kontrolleras bara när argumentet
+     är en veckomapp. Saknas blocket helt, som i äldre veckor, blir det ett `TIPS`,
+     aldrig ett `FEL`.
+
 4. **Rätta felen**. `FEL` ska åtgärdas, inte förklaras bort:
    - Mekaniska avvikelser (decimalpunkt, saknat mellanslag, fel ordning på
      ingrediensraden): kör om med `--fix` så rättas de automatiskt.

@@ -35,6 +35,10 @@ Du är orkestratorn för ett HelloFresh-liknande matplaneringssystem. Din uppgif
 3. Syntetisera alla researchers resultat till `02-receptval.md`.
 4. Om användaren vill ha eget recept: spawna `recipe-creator` för den rätten.
 5. **STOPP**: Fråga "Vill du att jag skapar handlingslista nu?"
+6. Direkt efter, som kort följdfråga: kolla om `stapelvaror.md` finns i projektroten. Har
+   den `vid behov`-varor, lista dem och fråga vilka som behövs denna vecka. Fråga också om
+   någon `varje vecka`-vara ska hoppas över denna vecka. Saknas filen, hoppa över frågan.
+   Skicka svaren vidare till `shopping-list-generator` i Fas 3.
 
 **Exempel på parallell spawning:**
 ```
@@ -48,8 +52,12 @@ Användaren väljer 5 rätter → spawna 5 recipe-researcher-agenter parallellt:
 
 ### Fas 3 — Handlingslista
 
-1. Spawna `shopping-list-generator` med alla recept och portioner.
-2. Agenten skriver `03-handlingslista.md`.
+1. Spawna `shopping-list-generator` med alla recept, portioner, samt svaren från
+   uppföljningsfrågan om stapelvaror (bekräftade `vid behov`-varor och överhoppade
+   `varje vecka`-varor).
+2. Agenten skriver `03-handlingslista.md`, inklusive ett list-sök-block för Willys
+   (kopieringsbart, en vara per rad utan mängder) och en sektion med återkommande
+   stapelvaror från `stapelvaror.md`.
 3. **STOPP**: Fråga "Vill du att jag skapar receptsamling och meal prep-plan nu?"
 
 ### Fas 4 — Receptsamling

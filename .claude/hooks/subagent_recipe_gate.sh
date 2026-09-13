@@ -17,11 +17,19 @@ counter="$state_dir/$(printf '%s' "$agent_id" | tr -c 'A-Za-z0-9_.-' '_')"
 
 cd "$PROJECT_DIR" || exit 0
 
-# Receptfiler som agenten har skapat eller andrat.
-mapfile -t files < <(
-  git status --porcelain --untracked-files=all 2>/dev/null \
-    | sed 's/^...//' \
+# Receptfiler som agenten har skapat eller andrat. Veckomapparna ar gitignorerade
+# och syns inte i git status, sa deras filer tas med om de andrats senaste timmen.
+# while-read i stallet for mapfile, som saknas i macOS bash 3.2.
+files=()
+while IFS= read -r f; do
+  [ -f "$f" ] && files+=("$f")
+done < <(
+  {
+    git status --porcelain --untracked-files=all 2>/dev/null | sed 's/^...//; s/.* -> //'
+    find . -maxdepth 2 -path './20??-??-??/*.md' -mmin -60 2>/dev/null | sed 's|^\./||'
+  } \
     | grep -E '(^|/)(recept-[^/]*\.md|04-alla-recept\.md)$|^recipe/.*\.md$' \
+    | grep -v '^recept-bank\.md$' \
     | sort -u
 )
 [ "${#files[@]}" -eq 0 ] && exit 0

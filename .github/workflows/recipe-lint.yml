@@ -40,6 +40,7 @@ jobs:
           git diff --name-only --diff-filter=d \
             "origin/$base...${{ github.sha }}" \
             | grep -E '^recipe/.*\.md$|(^|/)recept-[^/]*\.md$|(^|/)04-alla-recept\.md$' \
+            | grep -v '^recept-bank\.md$' \
             > changed.txt || true
           echo "count=$(wc -l < changed.txt)" >> "$GITHUB_OUTPUT"
           cat changed.txt
