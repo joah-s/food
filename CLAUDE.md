@@ -14,7 +14,8 @@ This is a meal planning repository that implements a HelloFresh-like workflow fo
 recipe/                              # Committed recipe library (not week-specific)
 ├── vegetarian/                      # Vegetarian recipes
 │   └── recept-<slug>-<portioner>p.md
-└── recept-<slug>-<portioner>p.md    # Meat & fish recipes
+└── kott-och-fisk/                   # Meat & fish recipes (everything non-vegetarian)
+    └── recept-<slug>-<portioner>p.md
 
 YYYY-MM-DD/                          # Date-based meal planning folders (gitignored)
 ├── 01-brainstorming.md              # Meal preferences + candidate meals
