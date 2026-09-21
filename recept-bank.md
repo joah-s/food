@@ -21,12 +21,12 @@ Agenten läser den här filen och prioriterar dessa rätter som kandidater varje
 | Rätt | Källa/länk | Taggar | Portioner | Notering |
 |---|---|---|---:|---|
 | Halloumiburgare | [HelloFresh](https://www.hellofresh.se/recipes/halloumiburgare-5ef1b2d34369b54e605a48e7) | vegetarisk, snabb, vardag | 2 | Med pommes, picklad lök och gurksalsa |
-| Ugnsbakade rotfrukter | [ICA](https://www.ica.se/recept/ugnsbakade-rotfrukter-399456/) | vegetarisk, batch, tillbehör | 4 | Bra bas till flera rätter |
+| Ugnsbakade rotfrukter med kikärtor och fetaost | [ICA](https://www.ica.se/recept/ugnsbakade-rotfrukter-399456/) | vegetarisk, batch, proteinrik | 4 | Egen version — kompletterad med rostade kikärtor, fetaost och tahiniyoghurt så den är en hel rätt |
 | Halloumistroganoff | [ICA](https://www.ica.se/recept/halloumistroganoff-722769/) | vegetarisk, vardag, batch | 4 | Serveras med ris, gryn eller pasta |
 | Marinerad tofu i ugn | [ICA](https://www.ica.se/recept/marinerad-tofu-i-ugn-727690/) | vegetarisk, proteinrik, batch | 8 | Bra meal prep-protein till bowls och wraps |
-| Krämig vegetarisk gryta med quorn och dijonsenap | [Köket](https://www.koket.se/kramig-vegetarisk-gryta-med-quorn-och-dijonsenap) | vegetarisk, gryta, vardag | 4 | Med dragon, dijon och soltorkad tomat |
+| Krämig vegetarisk gryta med quorn och dijonsenap | [Köket](https://www.koket.se/kramig-vegetarisk-gryta-med-quorn-och-dijonsenap) | vegetarisk, gryta, vardag | 4 | Med dijon och soltorkad tomat — ingen dragon |
 | TikTok-pasta med fetaost och tomater | [Coop](https://www.coop.se/recept/pasta-med-fetaost-och-tomater/) | vegetarisk, snabb, pasta | 4 (verifiera) | Kontrollera portionsantal i källan |
-| Quorn vegetarisk teriyaki med ris | [Quorn](https://www.quorn.se/recept/quorn-vegetarisk-teriyaki-med-ris) | vegetarisk, asiatisk, proteinrik | 4 | Snabb vardagsrätt |
+| Tofu teriyaki med ris | [Quorn](https://www.quorn.se/recept/quorn-vegetarisk-teriyaki-med-ris) | vegetarisk, asiatisk, proteinrik | 4 | Snabb vardagsrätt — görs med stekt tofu i stället för quorn |
 | Linsgryta med kokosmjölk | [ICA](https://www.ica.se/recept/linsgryta-med-kokosmjolk-724788/) | vegetarisk, gryta, batch | 4 | Klimatsmart och bra matlåda |
 | Tofu stroganoff | [ICA](https://www.ica.se/recept/tofu-stroganoff-728908/) | vegetarisk, vardag, proteinrik | 4 | Krämig stroganoff med tofu |
 

@@ -1,7 +1,7 @@
 # Recept — Krämig vegetarisk gryta med quorn och dijonsenap för 6 portioner
 
-Stekt quorn i en crème fraiche-sås med dragon, dijon och soltorkade tomater, serverad med
-ugnsbakade potatisskivor. Dragon och senap ger fransk bistrokaraktär på en vardagsgryta.
+Stekt quorn i en crème fraiche-sås med dijon, soja och soltorkade tomater, serverad med
+ugnsbakade potatisskivor. Senapen och vinägern ger fransk bistrokaraktär på en vardagsgryta.
 
 ## Ingredienser (6 portioner)
 
@@ -21,7 +21,6 @@ ugnsbakade potatisskivor. Dragon och senap ger fransk bistrokaraktär på en var
 - 6 dl crème fraiche
 - 1 msk kinesisk soja
 - 1,5 msk äppelcidervinäger
-- 6 msk torkad dragon
 - 3 msk grönsaksfond (koncentrerad)
 - 3 msk dijonsenap
 
@@ -48,7 +47,7 @@ ugnsbakade potatisskivor. Dragon och senap ger fransk bistrokaraktär på en var
 
 ### 4) Sås
 - Rör ner **6 dl** crème fraiche, **1 msk** kinesisk soja, **1,5 msk** äppelcidervinäger,
-  **6 msk** dragon, **3 msk** grönsaksfond, **3 msk** dijonsenap och de soltorkade tomaterna.
+  **3 msk** grönsaksfond, **3 msk** dijonsenap och de soltorkade tomaterna.
 - Låt puttra 5 min tills såsen tjocknat något. Smaka av.
 
 ### 5) Servera

@@ -12,7 +12,7 @@ i grädde med tomatpuré, dijon och timjan.
 - 4,5 dl vispgrädde
 - 3 msk tomatpuré
 - 1,5 msk dijonsenap
-- 1,5 tsk torkad timjan eller dragon
+- 1,5 tsk torkad timjan
 - 1,5 tsk rökt paprikapulver (valfritt)
 - salt och svartpeppar efter smak
 
@@ -36,7 +36,7 @@ i grädde med tomatpuré, dijon och timjan.
 
 ### 4) Sås
 - Tillsätt **4,5 dl** vispgrädde, **3 msk** tomatpuré, **1,5 msk** dijonsenap, **1,5 tsk**
-  timjan eller dragon och rökt paprikapulver.
+  timjan och rökt paprikapulver.
 - Sjud 5–10 min tills såsen tjocknat och täcker baksidan av en sked. Smaka av med salt och peppar.
 
 ### 5) Servera
